@@ -9,7 +9,8 @@
 			"smarterhoppers.test.LoadTest",
 			"smarterhoppers.test.MarkerTest",
 			"smarterhoppers.test.MarkedContainerRulesTest",
-			"smarterhoppers.test.LineRoutingTest"
+			"smarterhoppers.test.LineRoutingTest",
+			"smarterhoppers.test.TowerRoutingTest"
 		]
 	}
 }

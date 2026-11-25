@@ -79,8 +79,12 @@ Algoritmo de **simulación**:
 2. ✅ Detección de contenedores marcados (entidad vanilla y bloque de Fast Item Frames, cualquier contenedor, cofre doble por cualquiera de sus mitades) con caché invalidada por eventos y TTL de 100 ticks. 4 GameTests. La caché de la forma de las torres pasa a la fase 5, que es donde se usa.
 3. ✅ R1, R2 y bloqueo de los item frames-bloque con comparador. Implementado sobre `canPlaceItem`/`canTakeItem` de los contenedores (barril, cofre, shulker, dispensador, dropper, tolva; el cofre doble cuenta sus dos mitades), así que funciona con y sin Lithium (13 GameTests en verde en ambos casos). Afecta también a droppers y transferencias de otros mods, no solo a tolvas. Pendiente para la fase 7: avisar a Lithium cuando un contenedor gana o pierde la marca, para que no deje tolvas dormidas.
 4. ✅ R3: una tolva que no apunta hacia abajo y tiene un contenedor marcado justo debajo le mete primero lo que este acepte (R2); el resto sigue hacia delante. Inyección al inicio de `ejectItems`, antes que Lithium. 16 GameTests en verde con y sin Lithium (`-PnoLithium`).
-5. Torre: tolvas de una o dos salidas, T1 y T2, y caché de la forma de las torres.
-6. R4 con reservas, fondo común y margen, más la anticipación T3.
+5. ✅ Torre: T1, T2 y T3 en tolvas de dos salidas (apuntan de lado a un contenedor que no es una tolva y tienen otra tolva debajo). Decisiones de diseño:
+   - ítem **sin casa** en la columna (ningún cofre lo contiene) → comportamiento vanilla, para no romper torres de cofres vacíos;
+   - ítem con casa **llena** → espera en la tolva, sin ensuciar otros cofres;
+   - una tolva que apunta a otra tolva no es de torre → los sorters vanilla clásicos no cambian.
+   Sin caché de la forma de las torres: recorrer la columna cuesta unas pocas consultas de bloque y se medirá en la fase 9 antes de añadirla. 20 GameTests en verde con y sin Lithium.
+6. R4 con reservas, fondo común y margen (T3 ya está en la fase 5).
 7. Compatibilidad con Lithium.
 8. Comando `/smarterhoppers diagnostico`.
 9. Configuración, casos límite y rendimiento.
