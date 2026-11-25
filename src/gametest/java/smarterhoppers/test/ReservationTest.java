@@ -17,7 +17,16 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.HopperBlockEntity;
+
+import org.slf4j.LoggerFactory;
+
+import smarterhoppers.rules.MarkedContainerRules;
+import smarterhoppers.tower.TowerCapacity;
+import smarterhoppers.tower.TowerRouting;
 
 /**
  * Phase 6, R4: the whole system, as built in the user's world.
@@ -126,6 +135,56 @@ public class ReservationTest {
 			}
 			helper.assertTrue(stored == 3, Component.literal("diamonds stored: " + stored));
 			expectCount(helper, OVERFLOW, Items.DIAMOND, 0, "no diamonds to overflow");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * Cost of the two most expensive decisions on the full layout, with realistic contents: the R4
+	 * simulation (memo cleared every call) and the two-output routing of T1. Logged; the bound is
+	 * only a sanity check.
+	 */
+	@GameTest(maxTicks = 100)
+	public void decisionCost(GameTestHelper helper) {
+		build(helper, Items.OAK_LOG, Items.OAK_STAIRS, Items.OAK_FENCE, Items.OAK_SLAB);
+		fill(helper, C1, new ItemStack(Items.OAK_LOG, 64));
+		put(helper, C2, 0, Items.OAK_LOG, 30);
+		put(helper, C3, 0, Items.OAK_STAIRS, 12);
+		put(helper, C4, 0, Items.OAK_FENCE, 5);
+		put(helper, C4, 1, Items.OAK_SLAB, 40);
+		for (BlockPos hopper : HOPPERS) {
+			put(helper, hopper, 0, Items.OAK_LOG, 2);
+			put(helper, hopper, 1, Items.OAK_STAIRS, 1);
+		}
+		helper.runAfterDelay(1, () -> {
+			ServerLevel level = helper.getLevel();
+			BlockPos filterPos = helper.absolutePos(FILTER);
+			BlockEntity filter = level.getBlockEntity(filterPos);
+			HopperBlockEntity t1 = (HopperBlockEntity) level.getBlockEntity(helper.absolutePos(T1));
+			HopperBlockEntity t2 = (HopperBlockEntity) level.getBlockEntity(helper.absolutePos(T1.below()));
+			ItemStack log = new ItemStack(Items.OAK_LOG);
+			int runs = 5000;
+			for (int i = 0; i < 500; i++) { // warm-up
+				TowerCapacity.forget(level, filterPos);
+				MarkedContainerRules.mayInsert(filter, log);
+				TowerRouting.mayPassDown(t1, t2, log);
+			}
+			long start = System.nanoTime();
+			for (int i = 0; i < runs; i++) {
+				TowerCapacity.forget(level, filterPos);
+				MarkedContainerRules.mayInsert(filter, log);
+			}
+			double r4Micros = (System.nanoTime() - start) / 1000.0 / runs;
+			start = System.nanoTime();
+			for (int i = 0; i < runs; i++) {
+				TowerRouting.mayPassDown(t1, t2, log);
+			}
+			double routeMicros = (System.nanoTime() - start) / 1000.0 / runs;
+			LoggerFactory.getLogger("smarter_hoppers_test").info(
+					"Decision cost: R4 simulation {} µs, tower routing {} µs",
+					String.format("%.2f", r4Micros), String.format("%.2f", routeMicros));
+			helper.assertTrue(r4Micros < 500 && routeMicros < 500,
+					Component.literal("too slow: R4 " + r4Micros + " µs, routing " + routeMicros + " µs"));
 			helper.succeed();
 		});
 	}

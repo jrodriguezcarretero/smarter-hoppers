@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
 
+import smarterhoppers.config.SmarterHoppersConfig;
 import smarterhoppers.marker.Markers;
 import smarterhoppers.tower.TowerCapacity;
 import smarterhoppers.util.Loaded;
@@ -18,8 +19,8 @@ import smarterhoppers.util.Loaded;
 /**
  * Rules for marked containers (see {@link Markers}):
  * <ul>
- * <li>R1: an item can only be taken out while more than {@link #MIN_KEPT} of it remain, so the
- * filter items always stay.</li>
+ * <li>R1: an item can only be taken out while more than {@code filter_items_kept} (2 by default)
+ * of it remain, so the filter items always stay.</li>
  * <li>R2: an item can only be put in if the container already holds it.</li>
  * <li>R4: if the container feeds a tower, only if the tower can store it too
  * ({@link TowerCapacity}).</li>
@@ -27,9 +28,6 @@ import smarterhoppers.util.Loaded;
  * Counts cover the whole container, so both halves of a double chest.
  */
 public final class MarkedContainerRules {
-	/** Copies of each item a marked container always keeps. */
-	public static final int MIN_KEPT = 2;
-
 	private MarkedContainerRules() {
 	}
 
@@ -43,7 +41,7 @@ public final class MarkedContainerRules {
 		}
 		BlockPos pos = self.getBlockPos();
 		return !TowerCapacity.feedsTower(level, pos)
-				|| TowerCapacity.canAccept(level, pos, parts(level, self), stack, MIN_KEPT);
+				|| TowerCapacity.canAccept(level, pos, parts(level, self), stack, SmarterHoppersConfig.filterItemsKept());
 	}
 
 	/** R1, for {@code Container#canTakeItem} of a container block entity. */
@@ -51,7 +49,8 @@ public final class MarkedContainerRules {
 		if (!(self.getLevel() instanceof ServerLevel level) || !Markers.isMarked(level, self.getBlockPos())) {
 			return true;
 		}
-		return count(level, self, stack, MIN_KEPT + 1) > MIN_KEPT;
+		int kept = SmarterHoppersConfig.filterItemsKept();
+		return count(level, self, stack, kept + 1) > kept;
 	}
 
 	/** Counts {@code stack}'s item in the whole container, stopping once {@code enough} is reached. */

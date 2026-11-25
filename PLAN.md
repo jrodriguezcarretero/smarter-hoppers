@@ -66,8 +66,9 @@ Algoritmo de **simulación**:
 - **spark:** solo para medir el rendimiento.
 
 ## Configuración (`config/smarter-hoppers.json`)
-- `margen_cofre`
-- `compat_lithium`: `auto` | `desactivar_optimizacion_tolvas`
+- `filter_items_kept` (2): copias de cada ítem que conserva siempre un contenedor marcado (R1).
+- `chest_margin` (0): huecos vacíos de cada cofre de la torre que R4 nunca cuenta como sitio.
+- La compatibilidad con Lithium es automática (no hace falta opción).
 
 ## Fases
 0. **Investigación:**
@@ -89,7 +90,7 @@ Algoritmo de **simulación**:
 6. ✅ R4: un contenedor marcado con una tolva debajo solo acepta un ítem si la torre puede guardarlo, simulando lo que ya está en tránsito (contenedor marcado por encima de sus semillas + tolvas de la torre) con los huecos vacíos de cada cofre compartidos entre sus ítems. Los ítems sin casa en la torre cuentan contra los huecos vacíos de cualquier cofre. Resultado memorizado por tick. 23 GameTests en verde con y sin Lithium, incluido el caso del problema 2 (quedan 10 huecos, llegan 30 troncos: entran 10 y 20 van al overflow). El margen configurable queda para la fase 9.
 7. ✅ Compatibilidad con Lithium: cuando cambia un contenedor de almacenaje (o su marca), se avisa a las tolvas que lo alimentan aguas arriba (las que le apuntan, la columna de encima, el contenedor marcado y la línea) con la API pública de Lithium (`changedInteractionConditions`), para que reintenten aunque estén dormidas. Todas las consultas a bloques vecinos usan `Loaded` y nunca cargan chunks (evita cuelgues al descargar chunks o cerrar el servidor). 26 GameTests en verde con y sin Lithium.
 8. ✅ Comando `/smarterhoppers diagnose [radio]` (radio por defecto 16, máximo 48; solo lectura): cuenta contenedores marcados, cuántos alimentan una torre y tolvas de dos salidas, y lista los ítems que esperan porque su cofre está lleno. Mensajes en inglés y español, con texto en inglés de reserva para jugadores sin el mod.
-9. Configuración, casos límite y rendimiento.
+9. ✅ Configuración (`config/smarter-hoppers.json`: `filter_items_kept` = 2, `chest_margin` = 0) y rendimiento medido en GameTest sobre el montaje completo: simulación R4 ~21–30 µs (memorizada por ítem y tick), enrutado de torre ~1–2 µs. Estimación para 80 torres a pleno ritmo: < 1 ms por tick en el peor caso. No hace falta caché de la forma de las torres. 28 GameTests en verde con y sin Lithium.
 
 ## Pruebas (GameTest + manuales)
 1. Filtro con madera, escaleras y vallas sobre una torre, con ítems mezclados por la línea.

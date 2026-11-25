@@ -23,6 +23,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
+
+import smarterhoppers.config.SmarterHoppersConfig;
 import smarterhoppers.util.Loaded;
 
 /**
@@ -198,6 +200,8 @@ public final class TowerCapacity {
 					this.room.addTo(inSlot.copyWithCount(1), Math.max(0, limit(inSlot) - inSlot.getCount()));
 				}
 			}
+			// Keep the configured margin of empty slots out of reach.
+			this.emptySlots = Math.max(0, this.emptySlots - SmarterHoppersConfig.chestMargin());
 		}
 
 		private int limit(ItemStack stack) {

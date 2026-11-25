@@ -14,6 +14,7 @@ import net.minecraft.world.entity.decoration.ItemFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import smarterhoppers.config.SmarterHoppersConfig;
 import smarterhoppers.diagnose.DiagnoseCommand;
 import smarterhoppers.marker.FastItemFramesCompat;
 import smarterhoppers.marker.Markers;
@@ -24,6 +25,8 @@ public class SmarterHoppers implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		SmarterHoppersConfig.load();
+
 		// Keep the marked-container cache in sync with item frames appearing and disappearing.
 		ServerEntityEvents.ENTITY_LOAD.register((entity, level) -> {
 			if (entity instanceof ItemFrame frame) {

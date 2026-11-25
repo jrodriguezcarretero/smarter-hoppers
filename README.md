@@ -8,6 +8,15 @@ Fabric mod for Minecraft Java 26.2 that makes hopper-based storage towers route 
 - `/smarterhoppers diagnose [radius]` lists items waiting because the chest that holds them is full, and counts marked containers and two-output hoppers nearby.
 - Server-side only. Compatible with Lithium and Fast Item Frames.
 
+## Configuration
+
+`config/smarter-hoppers.json`, created on first start:
+
+| Key | Default | Meaning |
+|---|---|---|
+| `filter_items_kept` | 2 | Copies of each item a marked container always keeps (its filter items). |
+| `chest_margin` | 0 | Empty slots per tower chest never counted as room when deciding whether an item may enter a tower. |
+
 > Work in progress. Design notes (Spanish): [PLAN.md](PLAN.md), [FASE0.md](FASE0.md).
 
 ## Building
