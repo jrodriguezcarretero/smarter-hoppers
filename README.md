@@ -18,3 +18,7 @@ Requires JDK 25.
 ```
 
 The jar is written to `build/libs/`. Server game tests run as part of the build.
+
+## License
+
+[MIT](LICENSE)

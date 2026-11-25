@@ -11,6 +11,7 @@
 		"sources": "https://github.com/jrodriguezcarretero/smarter-hoppers",
 		"issues": "https://github.com/jrodriguezcarretero/smarter-hoppers/issues"
 	},
+	"license": "MIT",
 	"icon": "assets/smarter_hoppers/icon.png",
 	"environment": "*",
 	"entrypoints": {
