@@ -6,7 +6,8 @@
 	"environment": "*",
 	"entrypoints": {
 		"fabric-gametest": [
-			"smarterhoppers.test.LoadTest"
+			"smarterhoppers.test.LoadTest",
+			"smarterhoppers.test.MarkerTest"
 		]
 	}
 }

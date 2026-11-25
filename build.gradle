@@ -32,6 +32,10 @@ dependencies {
 
 	// Lithium is only loaded in dev and game tests, to check compatibility.
 	localRuntime "maven.modrinth:lithium:${project.lithium_version}"
+	// Fast Item Frames (and its libraries), to test frame blocks as markers.
+	localRuntime "maven.modrinth:fast-item-frames:${project.fast_item_frames_version}"
+	localRuntime "maven.modrinth:puzzles-lib:${project.puzzles_lib_version}"
+	localRuntime "maven.modrinth:forge-config-api-port:${project.forge_config_api_port_version}"
 }
 
 processResources {
