@@ -14,10 +14,11 @@ import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * Storage towers: a vertical chain of hoppers, each facing sideways into a chest (any non-hopper
- * container). A hopper of the chain with another hopper right below has two outputs: its chest,
- * and the hopper below, which pulls from it. The chests of a column are the ones faced by the
- * hoppers of the chain from a given hopper downwards.
+ * Storage towers: a vertical chain of hoppers, each facing sideways into a container. A hopper with
+ * another hopper right below has two outputs: the container it faces, and the hopper below, which
+ * pulls from it. The chests of a column are the containers other than hoppers faced by the hoppers
+ * of the chain from a given hopper downwards; they are where items are stored, while hoppers only
+ * carry items through.
  */
 public final class Towers {
 	/** Longest hopper chain looked at, to bound the cost of a lookup. */
@@ -37,13 +38,21 @@ public final class Towers {
 		return HopperBlockEntity.getContainerAt(level, target);
 	}
 
-	/** The chest of a tower hopper (two outputs), or null if the hopper at {@code pos} is not one. */
-	public static @Nullable Container towerChest(Level level, BlockPos pos, BlockState hopperState) {
-		if (hopperState.getValue(HopperBlock.FACING) == Direction.DOWN
-				|| !(level.getBlockEntity(pos.below()) instanceof HopperBlockEntity)) {
+	/**
+	 * The container a hopper with two outputs faces (any block container, hoppers included), or null
+	 * if the hopper at {@code pos} does not have two outputs: it must face sideways into a container
+	 * and have a hopper right below it.
+	 */
+	public static @Nullable Container twoOutputTarget(Level level, BlockPos pos, BlockState hopperState) {
+		Direction facing = hopperState.getValue(HopperBlock.FACING);
+		if (facing == Direction.DOWN || !(level.getBlockEntity(pos.below()) instanceof HopperBlockEntity)) {
 			return null;
 		}
-		return facedChest(level, pos, hopperState);
+		BlockPos target = pos.relative(facing);
+		if (!(level.getBlockEntity(target) instanceof Container)) {
+			return null;
+		}
+		return HopperBlockEntity.getContainerAt(level, target);
 	}
 
 	/** Whether some chest of the column starting at hopper {@code pos} already holds {@code stack}'s item. */

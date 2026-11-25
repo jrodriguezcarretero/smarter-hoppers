@@ -12,38 +12,48 @@ import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * Routing inside storage towers (see {@link Towers}), for hoppers with two outputs:
- * <ul>
- * <li>T1: the hopper only pushes an item into its chest if the chest already holds it.</li>
- * <li>T2: the hopper below only pulls what the chest will not take.</li>
- * <li>T3: and only if some chest further down holds the item and has room for it.</li>
- * </ul>
- * Items with no home in the column (no chest of it holds them) move as in vanilla, so towers of
- * empty, unsorted chests keep working. Items whose home is full wait in the hopper instead of
- * filling another chest.
+ * Routing for hoppers with two outputs: the container they face (a chest, a barrel, another
+ * hopper...) and the hopper right below them, which pulls from them. Each item goes to the output
+ * that already holds it:
+ * <ol>
+ * <li>a faced container (not a hopper) that holds the item and has room for it;</li>
+ * <li>otherwise the hopper below, if it holds the item and has room, or if a chest further down
+ * the column does (see {@link Towers});</li>
+ * <li>otherwise a faced hopper that holds the item and has room. When both outputs are hoppers
+ * holding the item, the one below wins, as the filter hopper of a hopper sorter.</li>
+ * </ol>
+ * If no output takes it but a chest of the column holds the item (its home is full), the item waits.
+ * Anything else moves as in vanilla, so towers of empty chests and full filter hoppers keep working.
  */
 public final class TowerRouting {
 	private TowerRouting() {
 	}
 
-	/** T1. Replaces {@code ejectItems} for tower hoppers; null for any other hopper. */
+	private enum Route {
+		FACED, BELOW, WAIT, VANILLA
+	}
+
+	/** Replaces {@code ejectItems} for hoppers with two outputs; null for any other hopper. */
 	public static @Nullable Boolean eject(Level level, BlockPos pos, HopperBlockEntity hopper) {
 		BlockState state = hopper.getBlockState();
-		Container chest = Towers.towerChest(level, pos, state);
-		if (chest == null) {
+		Container faced = Towers.twoOutputTarget(level, pos, state);
+		if (faced == null) {
 			return null;
 		}
 		Direction face = state.getValue(HopperBlock.FACING).getOpposite();
 		for (int slot = 0; slot < hopper.getContainerSize(); slot++) {
 			ItemStack itemStack = hopper.getItem(slot);
-			if (itemStack.isEmpty()
-					|| Towers.hasHome(level, pos, itemStack) && !Towers.contains(chest, itemStack)) {
+			if (itemStack.isEmpty()) {
+				continue;
+			}
+			Route route = route(level, pos, state, faced, itemStack);
+			if (route != Route.FACED && route != Route.VANILLA) {
 				continue;
 			}
 			int originalCount = itemStack.getCount();
-			ItemStack rest = HopperBlockEntity.addItem(hopper, chest, hopper.removeItem(slot, 1), face);
+			ItemStack rest = HopperBlockEntity.addItem(hopper, faced, hopper.removeItem(slot, 1), face);
 			if (rest.isEmpty()) {
-				chest.setChanged();
+				faced.setChanged();
 				return true;
 			}
 			// Same restore as vanilla's ejectItems.
@@ -55,7 +65,7 @@ public final class TowerRouting {
 		return false;
 	}
 
-	/** T2 and T3, for {@code canTakeItem} of a hopper when {@code into} pulls from it. */
+	/** For {@code canTakeItem} of a hopper: whether {@code into} may pull {@code stack} from it. */
 	public static boolean mayPassDown(HopperBlockEntity self, Container into, ItemStack stack) {
 		Level level = self.getLevel();
 		BlockPos pos = self.getBlockPos();
@@ -64,14 +74,36 @@ public final class TowerRouting {
 			return true;
 		}
 		BlockState state = self.getBlockState();
-		Container chest = Towers.towerChest(level, pos, state);
-		if (chest == null || !Towers.hasHome(level, pos, stack)) {
+		Container faced = Towers.twoOutputTarget(level, pos, state);
+		if (faced == null) {
 			return true;
 		}
+		Route route = route(level, pos, state, faced, stack);
+		return route == Route.BELOW || route == Route.VANILLA;
+	}
+
+	private static Route route(Level level, BlockPos pos, BlockState state, Container faced, ItemStack stack) {
 		Direction face = state.getValue(HopperBlock.FACING).getOpposite();
-		if (Towers.contains(chest, stack) && Towers.hasRoom(chest, stack, face)) {
-			return false;
+		boolean facedIsHopper = faced instanceof HopperBlockEntity;
+		boolean facedTakes = Towers.contains(faced, stack) && Towers.hasRoom(faced, stack, face);
+		if (facedTakes && !facedIsHopper) {
+			return Route.FACED;
 		}
-		return Towers.canStore(level, pos.below(), stack);
+		if (belowTakes(level, pos.below(), stack)) {
+			return Route.BELOW;
+		}
+		if (facedTakes) {
+			return Route.FACED;
+		}
+		return Towers.hasHome(level, pos, stack) ? Route.WAIT : Route.VANILLA;
+	}
+
+	/** The hopper below holds the item and has room, or a chest further down the column does. */
+	private static boolean belowTakes(Level level, BlockPos belowPos, ItemStack stack) {
+		if (level.getBlockEntity(belowPos) instanceof HopperBlockEntity below
+				&& Towers.contains(below, stack) && Towers.hasRoom(below, stack, Direction.UP)) {
+			return true;
+		}
+		return Towers.canStore(level, belowPos, stack);
 	}
 }

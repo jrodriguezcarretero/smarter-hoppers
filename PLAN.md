@@ -79,11 +79,13 @@ Algoritmo de **simulación**:
 2. ✅ Detección de contenedores marcados (entidad vanilla y bloque de Fast Item Frames, cualquier contenedor, cofre doble por cualquiera de sus mitades) con caché invalidada por eventos y TTL de 100 ticks. 4 GameTests. La caché de la forma de las torres pasa a la fase 5, que es donde se usa.
 3. ✅ R1, R2 y bloqueo de los item frames-bloque con comparador. Implementado sobre `canPlaceItem`/`canTakeItem` de los contenedores (barril, cofre, shulker, dispensador, dropper, tolva; el cofre doble cuenta sus dos mitades), así que funciona con y sin Lithium (13 GameTests en verde en ambos casos). Afecta también a droppers y transferencias de otros mods, no solo a tolvas. Pendiente para la fase 7: avisar a Lithium cuando un contenedor gana o pierde la marca, para que no deje tolvas dormidas.
 4. ✅ R3: una tolva que no apunta hacia abajo y tiene un contenedor marcado justo debajo le mete primero lo que este acepte (R2); el resto sigue hacia delante. Inyección al inicio de `ejectItems`, antes que Lithium. 16 GameTests en verde con y sin Lithium (`-PnoLithium`).
-5. ✅ Torre: T1, T2 y T3 en tolvas de dos salidas (apuntan de lado a un contenedor que no es una tolva y tienen otra tolva debajo). Decisiones de diseño:
-   - ítem **sin casa** en la columna (ningún cofre lo contiene) → comportamiento vanilla, para no romper torres de cofres vacíos;
-   - ítem con casa **llena** → espera en la tolva, sin ensuciar otros cofres;
-   - una tolva que apunta a otra tolva no es de torre → los sorters vanilla clásicos no cambian.
-   Sin caché de la forma de las torres: recorrer la columna cuesta unas pocas consultas de bloque y se medirá en la fase 9 antes de añadirla. 20 GameTests en verde con y sin Lithium.
+5. ✅ Tolvas de dos salidas (apuntan de lado a cualquier contenedor, tolvas incluidas, y tienen otra tolva debajo): cada ítem va a la salida que ya lo contiene. Orden:
+   1. contenedor de delante que no es tolva, si lo contiene y tiene sitio;
+   2. tolva de abajo, si lo contiene y tiene sitio, o si un cofre más abajo de la columna lo contiene y tiene sitio (T3);
+   3. tolva de delante, si lo contiene y tiene sitio. Si las dos salidas son tolvas y lo contienen, gana la de abajo (filtro de un sorter vanilla).
+   - Si ninguna lo acepta pero un cofre de la columna lo contiene (su casa está llena) → espera en la tolva. Las tolvas llenas no hacen esperar (un filtro lleno no atasca la línea).
+   - Ítem sin casa → comportamiento vanilla, para no romper torres de cofres vacíos.
+   Sin caché de la forma de las torres: se medirá en la fase 9 antes de añadirla. 24 GameTests en verde con y sin Lithium, incluidos dos de sorter vanilla.
 6. ✅ R4: un contenedor marcado con una tolva debajo solo acepta un ítem si la torre puede guardarlo, simulando lo que ya está en tránsito (contenedor marcado por encima de sus semillas + tolvas de la torre) con los huecos vacíos de cada cofre compartidos entre sus ítems. Los ítems sin casa en la torre cuentan contra los huecos vacíos de cualquier cofre. Resultado memorizado por tick. 23 GameTests en verde con y sin Lithium, incluido el caso del problema 2 (quedan 10 huecos, llegan 30 troncos: entran 10 y 20 van al overflow). El margen configurable queda para la fase 9.
 7. Compatibilidad con Lithium.
 8. Comando `/smarterhoppers diagnostico`.

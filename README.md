@@ -2,7 +2,7 @@
 
 Fabric mod for Minecraft Java 26.2 that makes hopper-based storage towers route items correctly and never clog.
 
-- A hopper that can push either into a chest or down into the next hopper sends each item to the chest that **already holds it**; the next hopper is the last resort.
+- A hopper with two outputs (the container it faces, and the hopper below that pulls from it) sends each item to the output that **already holds it**: storage towers fill the right chests, and hopper sorters' filters get their items.
 - **Filter containers**: any container with an item frame holding a **comparator** pulls matching items from the hopper line above. Items only enter a tower if a chest inside it has room for them; everything else continues to the overflow.
 - Hoppers with a single output behave exactly like vanilla.
 - Server-side only. Compatible with Lithium and Fast Item Frames.

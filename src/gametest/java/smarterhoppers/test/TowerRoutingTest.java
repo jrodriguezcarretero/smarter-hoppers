@@ -107,21 +107,46 @@ public class TowerRoutingTest {
 		});
 	}
 
-	/** A hopper facing another hopper is not a tower hopper: classic hopper sorters keep vanilla behaviour. */
+	/**
+	 * Hopper sorter: line hopper facing the next line hopper, filter hopper below it. The filter's
+	 * spare slots are full of cobblestone, as in a vanilla redstone sorter.
+	 */
+	private static void buildSorter(GameTestHelper helper, int filterDiamonds) {
+		hopper(helper, SORTER_LINE, Direction.EAST);
+		hopper(helper, SORTER_NEXT, Direction.EAST);
+		hopper(helper, SORTER_FILTER, Direction.DOWN);
+		put(helper, SORTER_FILTER, 0, Items.DIAMOND, filterDiamonds);
+		for (int slot = 1; slot < 5; slot++) {
+			put(helper, SORTER_FILTER, slot, Items.COBBLESTONE, 64);
+		}
+	}
+
+	private static final BlockPos SORTER_LINE = new BlockPos(1, 3, 1);
+	private static final BlockPos SORTER_NEXT = SORTER_LINE.east();
+	private static final BlockPos SORTER_FILTER = SORTER_LINE.below();
+
+	/** Both outputs are hoppers holding diamonds: the filter below wins. */
 	@GameTest(maxTicks = 400)
-	public void hopperFacingHopperIsUnchanged(GameTestHelper helper) {
-		BlockPos line = new BlockPos(1, 3, 1);
-		BlockPos next = line.east();
-		BlockPos below = line.below();
-		hopper(helper, line, Direction.EAST);
-		hopper(helper, next, Direction.EAST);
-		hopper(helper, below, Direction.DOWN);
-		// next does not hold diamonds: under T1 rules they would never be pushed into it.
-		put(helper, next, 0, Items.STICK, 1);
-		put(helper, line, 0, Items.DIAMOND, 10);
-		helper.runAfterDelay(100, () -> {
-			helper.assertTrue(count(helper, below, Items.DIAMOND) > 0 && count(helper, next, Items.DIAMOND) > 0,
-					Component.literal("diamonds should go both ways as in vanilla"));
+	public void sorterFilterGetsItsItem(GameTestHelper helper) {
+		buildSorter(helper, 1);
+		put(helper, SORTER_NEXT, 0, Items.DIAMOND, 1);
+		put(helper, SORTER_LINE, 0, Items.DIAMOND, 5);
+		put(helper, SORTER_LINE, 1, Items.STICK, 3);
+		helper.runAfterDelay(150, () -> {
+			expectCount(helper, SORTER_FILTER, Items.DIAMOND, 6, "diamonds into the filter");
+			expectCount(helper, SORTER_NEXT, Items.DIAMOND, 1, "no diamonds along the line");
+			expectCount(helper, SORTER_NEXT, Items.STICK, 3, "sticks along the line");
+			helper.succeed();
+		});
+	}
+
+	/** A full filter hopper does not make items wait: they carry on along the line. */
+	@GameTest(maxTicks = 400)
+	public void fullSorterFilterDoesNotJamTheLine(GameTestHelper helper) {
+		buildSorter(helper, 64);
+		put(helper, SORTER_LINE, 0, Items.DIAMOND, 3);
+		helper.runAfterDelay(150, () -> {
+			expectCount(helper, SORTER_NEXT, Items.DIAMOND, 3, "diamonds carried on");
 			helper.succeed();
 		});
 	}
