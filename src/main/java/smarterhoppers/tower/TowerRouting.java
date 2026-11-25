@@ -84,6 +84,13 @@ public final class TowerRouting {
 		return route == Route.BELOW || route == Route.VANILLA;
 	}
 
+	/** Whether {@code stack} in this two-output hopper waits because the chest that holds it is full. */
+	public static boolean isWaiting(Level level, BlockPos pos, HopperBlockEntity hopper, ItemStack stack) {
+		BlockState state = hopper.getBlockState();
+		Container faced = Towers.twoOutputTarget(level, pos, state);
+		return faced != null && route(level, pos, state, faced, stack) == Route.WAIT;
+	}
+
 	private static Route route(Level level, BlockPos pos, BlockState state, Container faced, ItemStack stack) {
 		Direction face = state.getValue(HopperBlock.FACING).getOpposite();
 		boolean facedIsHopper = faced instanceof HopperBlockEntity;

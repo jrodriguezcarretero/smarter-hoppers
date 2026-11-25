@@ -1,0 +1,5 @@
+{
+	"commands.smarter_hoppers.diagnose.summary": "En %s bloques: %s contenedores marcados (%s alimentan una torre), %s tolvas con dos salidas, %s ítems esperando.",
+	"commands.smarter_hoppers.diagnose.waiting": "  %s × %s esperando en %s %s %s: el cofre que lo contiene está lleno.",
+	"commands.smarter_hoppers.diagnose.more": "  ...y %s más."
+}

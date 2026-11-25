@@ -43,7 +43,7 @@ Algoritmo de **simulación**:
 
 ### Garantía y límite
 - No hay atascos porque: todo ítem entra con un sitio reservado, el flujo solo baja y no tiene ciclos, y una tolva vanilla prueba todos sus huecos al empujar.
-- **Límite:** si se insertan ítems a mano en un cofre de la torre (o lo hace otro mod), algún ítem reservado puede quedarse parado en una tolva hasta que se libere sitio. No bloquea el resto de la torre. `/smarterhoppers diagnostico` indica dónde hay ítems sin destino.
+- **Límite:** si se insertan ítems a mano en un cofre de la torre (o lo hace otro mod), algún ítem reservado puede quedarse parado en una tolva hasta que se libere sitio. No bloquea el resto de la torre. `/smarterhoppers diagnose` indica dónde hay ítems sin destino.
 
 ## Compatibilidad
 - **Lithium** (instalado):
@@ -88,7 +88,7 @@ Algoritmo de **simulación**:
    Sin caché de la forma de las torres: se medirá en la fase 9 antes de añadirla. 24 GameTests en verde con y sin Lithium, incluidos dos de sorter vanilla.
 6. ✅ R4: un contenedor marcado con una tolva debajo solo acepta un ítem si la torre puede guardarlo, simulando lo que ya está en tránsito (contenedor marcado por encima de sus semillas + tolvas de la torre) con los huecos vacíos de cada cofre compartidos entre sus ítems. Los ítems sin casa en la torre cuentan contra los huecos vacíos de cualquier cofre. Resultado memorizado por tick. 23 GameTests en verde con y sin Lithium, incluido el caso del problema 2 (quedan 10 huecos, llegan 30 troncos: entran 10 y 20 van al overflow). El margen configurable queda para la fase 9.
 7. ✅ Compatibilidad con Lithium: cuando cambia un contenedor de almacenaje (o su marca), se avisa a las tolvas que lo alimentan aguas arriba (las que le apuntan, la columna de encima, el contenedor marcado y la línea) con la API pública de Lithium (`changedInteractionConditions`), para que reintenten aunque estén dormidas. Todas las consultas a bloques vecinos usan `Loaded` y nunca cargan chunks (evita cuelgues al descargar chunks o cerrar el servidor). 26 GameTests en verde con y sin Lithium.
-8. Comando `/smarterhoppers diagnostico`.
+8. ✅ Comando `/smarterhoppers diagnose [radio]` (radio por defecto 16, máximo 48; solo lectura): cuenta contenedores marcados, cuántos alimentan una torre y tolvas de dos salidas, y lista los ítems que esperan porque su cofre está lleno. Mensajes en inglés y español, con texto en inglés de reserva para jugadores sin el mod.
 9. Configuración, casos límite y rendimiento.
 
 ## Pruebas (GameTest + manuales)

@@ -1,6 +1,7 @@
 package smarterhoppers;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerBlockEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLevelEvents;
@@ -13,6 +14,7 @@ import net.minecraft.world.entity.decoration.ItemFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import smarterhoppers.diagnose.DiagnoseCommand;
 import smarterhoppers.marker.FastItemFramesCompat;
 import smarterhoppers.marker.Markers;
 
@@ -51,6 +53,9 @@ public class SmarterHoppers implements ModInitializer {
 			}
 		});
 		ServerLevelEvents.UNLOAD.register((server, level) -> Markers.clear(level));
+
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
+				DiagnoseCommand.register(dispatcher));
 
 		FabricLoader loader = FabricLoader.getInstance();
 		LOGGER.info("Smarter Hoppers loaded (Lithium: {}, Fast Item Frames: {})",

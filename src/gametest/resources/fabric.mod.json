@@ -12,7 +12,8 @@
 			"smarterhoppers.test.LineRoutingTest",
 			"smarterhoppers.test.TowerRoutingTest",
 			"smarterhoppers.test.ReservationTest",
-			"smarterhoppers.test.WakeUpTest"
+			"smarterhoppers.test.WakeUpTest",
+			"smarterhoppers.test.DiagnosisTest"
 		]
 	}
 }
