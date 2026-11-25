@@ -1,0 +1,30 @@
+{
+	"schemaVersion": 1,
+	"id": "smarter_hoppers",
+	"version": "${version}",
+	"name": "Smarter Hoppers",
+	"description": "Hoppers that send each item to the chest that already holds it, plus filter containers marked with an item frame holding a comparator. No clogging.",
+	"authors": [
+		"jrodriguezcarretero"
+	],
+	"contact": {
+		"sources": "https://github.com/jrodriguezcarretero/smarter-hoppers",
+		"issues": "https://github.com/jrodriguezcarretero/smarter-hoppers/issues"
+	},
+	"icon": "assets/smarter_hoppers/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"smarterhoppers.SmarterHoppers"
+		]
+	},
+	"mixins": [
+		"smarter_hoppers.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

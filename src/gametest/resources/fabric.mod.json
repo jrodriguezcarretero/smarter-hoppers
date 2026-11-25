@@ -1,0 +1,12 @@
+{
+	"schemaVersion": 1,
+	"id": "smarter_hoppers_test",
+	"version": "1.0.0",
+	"name": "Smarter Hoppers (tests)",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-gametest": [
+			"smarterhoppers.test.LoadTest"
+		]
+	}
+}
