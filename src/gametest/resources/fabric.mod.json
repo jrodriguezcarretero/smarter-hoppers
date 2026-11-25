@@ -8,7 +8,8 @@
 		"fabric-gametest": [
 			"smarterhoppers.test.LoadTest",
 			"smarterhoppers.test.MarkerTest",
-			"smarterhoppers.test.MarkedContainerRulesTest"
+			"smarterhoppers.test.MarkedContainerRulesTest",
+			"smarterhoppers.test.LineRoutingTest"
 		]
 	}
 }

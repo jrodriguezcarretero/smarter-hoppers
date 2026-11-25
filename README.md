@@ -17,7 +17,7 @@ Requires JDK 25.
 ./gradlew build
 ```
 
-The jar is written to `build/libs/`. Server game tests run as part of the build.
+The jar is written to `build/libs/`. Server game tests run as part of the build, with Lithium and Fast Item Frames loaded. Add `-PnoLithium` to run them against vanilla hopper code.
 
 ## License
 

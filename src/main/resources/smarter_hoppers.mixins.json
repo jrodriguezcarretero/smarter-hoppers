@@ -6,6 +6,7 @@
 		"BaseContainerBlockEntityMixin",
 		"BlockEntityMixin",
 		"CompoundContainerMixin",
+		"HopperBlockEntityMixin",
 		"ItemFrameMixin"
 	],
 	"injectors": {

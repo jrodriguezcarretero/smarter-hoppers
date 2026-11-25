@@ -8,13 +8,12 @@ import net.minecraft.network.chat.Component;
 
 import smarterhoppers.SmarterHoppers;
 
-/** Phase 1: the mod loads alongside Lithium. */
+/** Phase 1: the mod loads (with or without Lithium, see -PnoLithium). */
 public class LoadTest {
 	@GameTest
-	public void loadsWithLithium(GameTestHelper helper) {
+	public void loads(GameTestHelper helper) {
 		FabricLoader loader = FabricLoader.getInstance();
 		helper.assertTrue(loader.isModLoaded(SmarterHoppers.MOD_ID), Component.literal("Smarter Hoppers is not loaded"));
-		helper.assertTrue(loader.isModLoaded("lithium"), Component.literal("Lithium is not loaded"));
 		helper.succeed();
 	}
 }
