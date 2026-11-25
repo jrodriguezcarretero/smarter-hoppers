@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
 
 import smarterhoppers.marker.Markers;
+import smarterhoppers.tower.TowerCapacity;
 
 /**
  * Rules for marked containers (see {@link Markers}):
@@ -19,6 +20,8 @@ import smarterhoppers.marker.Markers;
  * <li>R1: an item can only be taken out while more than {@link #MIN_KEPT} of it remain, so the
  * filter items always stay.</li>
  * <li>R2: an item can only be put in if the container already holds it.</li>
+ * <li>R4: if the container feeds a tower, only if the tower can store it too
+ * ({@link TowerCapacity}).</li>
  * </ul>
  * Counts cover the whole container, so both halves of a double chest.
  */
@@ -29,12 +32,17 @@ public final class MarkedContainerRules {
 	private MarkedContainerRules() {
 	}
 
-	/** R2, for {@code Container#canPlaceItem} of a container block entity. */
+	/** R2 and R4, for {@code Container#canPlaceItem} of a container block entity. */
 	public static boolean mayInsert(BlockEntity self, ItemStack stack) {
 		if (!(self.getLevel() instanceof ServerLevel level) || !Markers.isMarked(level, self.getBlockPos())) {
 			return true;
 		}
-		return count(level, self, stack, 1) > 0;
+		if (count(level, self, stack, 1) == 0) {
+			return false;
+		}
+		BlockPos pos = self.getBlockPos();
+		return !TowerCapacity.feedsTower(level, pos)
+				|| TowerCapacity.canAccept(level, pos, parts(level, self), stack, MIN_KEPT);
 	}
 
 	/** R1, for {@code Container#canTakeItem} of a container block entity. */

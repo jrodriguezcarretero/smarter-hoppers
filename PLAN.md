@@ -84,7 +84,7 @@ Algoritmo de **simulación**:
    - ítem con casa **llena** → espera en la tolva, sin ensuciar otros cofres;
    - una tolva que apunta a otra tolva no es de torre → los sorters vanilla clásicos no cambian.
    Sin caché de la forma de las torres: recorrer la columna cuesta unas pocas consultas de bloque y se medirá en la fase 9 antes de añadirla. 20 GameTests en verde con y sin Lithium.
-6. R4 con reservas, fondo común y margen (T3 ya está en la fase 5).
+6. ✅ R4: un contenedor marcado con una tolva debajo solo acepta un ítem si la torre puede guardarlo, simulando lo que ya está en tránsito (contenedor marcado por encima de sus semillas + tolvas de la torre) con los huecos vacíos de cada cofre compartidos entre sus ítems. Los ítems sin casa en la torre cuentan contra los huecos vacíos de cualquier cofre. Resultado memorizado por tick. 23 GameTests en verde con y sin Lithium, incluido el caso del problema 2 (quedan 10 huecos, llegan 30 troncos: entran 10 y 20 van al overflow). El margen configurable queda para la fase 9.
 7. Compatibilidad con Lithium.
 8. Comando `/smarterhoppers diagnostico`.
 9. Configuración, casos límite y rendimiento.
