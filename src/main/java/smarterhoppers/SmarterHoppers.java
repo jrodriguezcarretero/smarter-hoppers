@@ -27,10 +27,13 @@ public class SmarterHoppers implements ModInitializer {
 	public void onInitialize() {
 		SmarterHoppersConfig.load();
 
-		// Keep the marked-container cache in sync with item frames appearing and disappearing.
+		// Keep the marked-container cache in sync with item frames appearing and disappearing. Loading
+		// only drops cache entries: these events also fire while chunks load, when neighbours must not
+		// be touched, and hoppers loading with them are not asleep. A frame gets its marker later, which
+		// wakes its hoppers (ItemFrameMixin, BlockEntityMixin).
 		ServerEntityEvents.ENTITY_LOAD.register((entity, level) -> {
 			if (entity instanceof ItemFrame frame) {
-				Markers.invalidate(level, Markers.supportOf(frame));
+				Markers.forget(level, Markers.supportOf(frame));
 			}
 		});
 		// A frame that is broken or removed lets its hoppers know; one unloading with its chunk only
@@ -47,7 +50,7 @@ public class SmarterHoppers implements ModInitializer {
 		});
 		ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register((blockEntity, level) -> {
 			if (FastItemFramesCompat.isFrameBlockEntity(blockEntity)) {
-				Markers.invalidateAround(level, blockEntity.getBlockPos());
+				Markers.forgetAround(level, blockEntity.getBlockPos());
 			}
 		});
 		ServerBlockEntityEvents.BLOCK_ENTITY_UNLOAD.register((blockEntity, level) -> {

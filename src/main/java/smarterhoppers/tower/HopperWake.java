@@ -35,7 +35,7 @@ public final class HopperWake {
 
 	/** {@code pos} holds a container (not a hopper) whose contents or marker changed. */
 	public static void containerChanged(Level level, BlockPos pos) {
-		if (!LithiumCompat.LOADED || !(level instanceof ServerLevel) || !level.isLoaded(pos)) {
+		if (!LithiumCompat.LOADED || !(level instanceof ServerLevel) || !Loaded.isLoaded(level, pos)) {
 			return;
 		}
 		ArrayDeque<BlockPos> queue = new ArrayDeque<>();
