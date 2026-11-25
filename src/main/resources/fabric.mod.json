@@ -20,7 +20,8 @@
 		]
 	},
 	"mixins": [
-		"smarter_hoppers.mixins.json"
+		"smarter_hoppers.mixins.json",
+		"smarter_hoppers.compat.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.19.5",

@@ -1,0 +1,11 @@
+{
+	"required": false,
+	"package": "smarterhoppers.mixin.compat",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"FastItemFramesBlockEntityMixin"
+	],
+	"injectors": {
+		"defaultRequire": 0
+	}
+}

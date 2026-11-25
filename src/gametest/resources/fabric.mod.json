@@ -7,7 +7,8 @@
 	"entrypoints": {
 		"fabric-gametest": [
 			"smarterhoppers.test.LoadTest",
-			"smarterhoppers.test.MarkerTest"
+			"smarterhoppers.test.MarkerTest",
+			"smarterhoppers.test.MarkedContainerRulesTest"
 		]
 	}
 }

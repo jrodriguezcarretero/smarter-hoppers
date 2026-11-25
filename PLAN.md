@@ -77,7 +77,7 @@ Algoritmo de **simulación**:
    - lista de mods del usuario.
 1. ✅ Proyecto base que carga en 26.2 con Lithium (build y GameTest en verde, 2026-11-25).
 2. ✅ Detección de contenedores marcados (entidad vanilla y bloque de Fast Item Frames, cualquier contenedor, cofre doble por cualquiera de sus mitades) con caché invalidada por eventos y TTL de 100 ticks. 4 GameTests. La caché de la forma de las torres pasa a la fase 5, que es donde se usa.
-3. R1 y R2.
+3. ✅ R1, R2 y bloqueo de los item frames-bloque con comparador. Implementado sobre `canPlaceItem`/`canTakeItem` de los contenedores (barril, cofre, shulker, dispensador, dropper, tolva; el cofre doble cuenta sus dos mitades), así que funciona con y sin Lithium (13 GameTests en verde en ambos casos). Afecta también a droppers y transferencias de otros mods, no solo a tolvas. Pendiente para la fase 7: avisar a Lithium cuando un contenedor gana o pierde la marca, para que no deje tolvas dormidas.
 4. R3: prioridad de la tolva de la línea sobre el contenedor marcado.
 5. Torre: tolvas de una o dos salidas, T1 y T2, y caché de la forma de las torres.
 6. R4 con reservas, fondo común y margen, más la anticipación T3.

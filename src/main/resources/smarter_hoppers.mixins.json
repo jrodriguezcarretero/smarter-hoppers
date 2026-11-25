@@ -3,7 +3,9 @@
 	"package": "smarterhoppers.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
+		"BaseContainerBlockEntityMixin",
 		"BlockEntityMixin",
+		"CompoundContainerMixin",
 		"ItemFrameMixin"
 	],
 	"injectors": {
