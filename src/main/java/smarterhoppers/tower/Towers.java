@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.HopperBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import smarterhoppers.util.Loaded;
 
 /**
  * Storage towers: a vertical chain of hoppers, each facing sideways into a container. A hopper with
@@ -31,7 +32,7 @@ public final class Towers {
 	public static @Nullable Container facedChest(Level level, BlockPos pos, BlockState hopperState) {
 		Direction facing = hopperState.getValue(HopperBlock.FACING);
 		BlockPos target = pos.relative(facing);
-		BlockEntity blockEntity = level.getBlockEntity(target);
+		BlockEntity blockEntity = Loaded.blockEntity(level, target);
 		if (!(blockEntity instanceof Container) || blockEntity instanceof HopperBlockEntity) {
 			return null;
 		}
@@ -45,11 +46,11 @@ public final class Towers {
 	 */
 	public static @Nullable Container twoOutputTarget(Level level, BlockPos pos, BlockState hopperState) {
 		Direction facing = hopperState.getValue(HopperBlock.FACING);
-		if (facing == Direction.DOWN || !(level.getBlockEntity(pos.below()) instanceof HopperBlockEntity)) {
+		if (facing == Direction.DOWN || !(Loaded.blockEntity(level, pos.below()) instanceof HopperBlockEntity)) {
 			return null;
 		}
 		BlockPos target = pos.relative(facing);
-		if (!(level.getBlockEntity(target) instanceof Container)) {
+		if (!(Loaded.blockEntity(level, target) instanceof Container)) {
 			return null;
 		}
 		return HopperBlockEntity.getContainerAt(level, target);
@@ -59,7 +60,7 @@ public final class Towers {
 	public static boolean hasHome(Level level, BlockPos pos, ItemStack stack) {
 		BlockPos current = pos;
 		for (int depth = 0; depth < MAX_DEPTH; depth++) {
-			if (!(level.getBlockEntity(current) instanceof HopperBlockEntity hopper)) {
+			if (!(Loaded.blockEntity(level, current) instanceof HopperBlockEntity hopper)) {
 				return false;
 			}
 			Container chest = facedChest(level, current, hopper.getBlockState());
@@ -75,7 +76,7 @@ public final class Towers {
 	public static boolean canStore(Level level, BlockPos pos, ItemStack stack) {
 		BlockPos current = pos;
 		for (int depth = 0; depth < MAX_DEPTH; depth++) {
-			if (!(level.getBlockEntity(current) instanceof HopperBlockEntity hopper)) {
+			if (!(Loaded.blockEntity(level, current) instanceof HopperBlockEntity hopper)) {
 				return false;
 			}
 			BlockState state = hopper.getBlockState();

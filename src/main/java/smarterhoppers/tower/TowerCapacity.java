@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
+import smarterhoppers.util.Loaded;
 
 /**
  * R4: a marked container that feeds a tower (has a hopper right below it) only takes an item if the
@@ -64,7 +65,7 @@ public final class TowerCapacity {
 
 	/** Whether the marked container at {@code markedPos} feeds a tower. */
 	public static boolean feedsTower(Level level, BlockPos markedPos) {
-		return level.getBlockEntity(markedPos.below()) instanceof HopperBlockEntity;
+		return Loaded.blockEntity(level, markedPos.below()) instanceof HopperBlockEntity;
 	}
 
 	/**
@@ -142,13 +143,13 @@ public final class TowerCapacity {
 		queue.add(start);
 		while (!queue.isEmpty() && seenHoppers.size() < MAX_HOPPERS) {
 			BlockPos pos = queue.poll();
-			if (!seenHoppers.add(pos.asLong()) || !(level.getBlockEntity(pos) instanceof HopperBlockEntity hopper)) {
+			if (!seenHoppers.add(pos.asLong()) || !(Loaded.blockEntity(level, pos) instanceof HopperBlockEntity hopper)) {
 				continue;
 			}
 			addAll(hopper, inTransit);
 			Direction facing = hopper.getBlockState().getValue(HopperBlock.FACING);
 			BlockPos target = pos.relative(facing);
-			BlockEntity targetEntity = level.getBlockEntity(target);
+			BlockEntity targetEntity = Loaded.blockEntity(level, target);
 			if (targetEntity instanceof HopperBlockEntity) {
 				queue.add(target);
 			} else if (targetEntity instanceof Container && seenChests.add(chestKey(level, target))) {
@@ -157,7 +158,7 @@ public final class TowerCapacity {
 					chests.add(new Chest(chest));
 				}
 			}
-			if (level.getBlockEntity(pos.below()) instanceof HopperBlockEntity) {
+			if (Loaded.blockEntity(level, pos.below()) instanceof HopperBlockEntity) {
 				queue.add(pos.below());
 			}
 		}
@@ -165,7 +166,7 @@ public final class TowerCapacity {
 
 	/** Same key for both halves of a double chest. */
 	private static long chestKey(Level level, BlockPos pos) {
-		BlockState state = level.getBlockState(pos);
+		BlockState state = Loaded.blockState(level, pos);
 		if (state.getBlock() instanceof ChestBlock && state.getValue(ChestBlock.TYPE) != ChestType.SINGLE) {
 			return Math.min(pos.asLong(), ChestBlock.getConnectedBlockPos(pos, state).asLong());
 		}

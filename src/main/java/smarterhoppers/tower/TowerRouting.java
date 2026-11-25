@@ -11,6 +11,8 @@ import net.minecraft.world.level.block.HopperBlock;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
+import smarterhoppers.util.Loaded;
+
 /**
  * Routing for hoppers with two outputs: the container they face (a chest, a barrel, another
  * hopper...) and the hopper right below them, which pulls from them. Each item goes to the output
@@ -100,7 +102,7 @@ public final class TowerRouting {
 
 	/** The hopper below holds the item and has room, or a chest further down the column does. */
 	private static boolean belowTakes(Level level, BlockPos belowPos, ItemStack stack) {
-		if (level.getBlockEntity(belowPos) instanceof HopperBlockEntity below
+		if (Loaded.blockEntity(level, belowPos) instanceof HopperBlockEntity below
 				&& Towers.contains(below, stack) && Towers.hasRoom(below, stack, Direction.UP)) {
 			return true;
 		}

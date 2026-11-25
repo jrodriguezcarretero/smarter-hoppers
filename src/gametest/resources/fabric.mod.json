@@ -11,7 +11,8 @@
 			"smarterhoppers.test.MarkedContainerRulesTest",
 			"smarterhoppers.test.LineRoutingTest",
 			"smarterhoppers.test.TowerRoutingTest",
-			"smarterhoppers.test.ReservationTest"
+			"smarterhoppers.test.ReservationTest",
+			"smarterhoppers.test.WakeUpTest"
 		]
 	}
 }

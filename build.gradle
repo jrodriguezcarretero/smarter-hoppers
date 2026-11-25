@@ -30,6 +30,9 @@ dependencies {
 	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
+	// Lithium's public API, to tell it when hopper decisions change (used only if Lithium is installed).
+	compileOnly "maven.modrinth:lithium:${project.lithium_version}"
+
 	// Lithium is only loaded in dev and game tests, to check compatibility.
 	// Run with -PnoLithium to test against vanilla hopper code instead.
 	if (!project.hasProperty('noLithium')) {

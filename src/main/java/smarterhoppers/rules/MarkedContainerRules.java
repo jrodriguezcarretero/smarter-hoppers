@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.state.properties.ChestType;
 
 import smarterhoppers.marker.Markers;
 import smarterhoppers.tower.TowerCapacity;
+import smarterhoppers.util.Loaded;
 
 /**
  * Rules for marked containers (see {@link Markers}):
@@ -76,7 +77,7 @@ public final class MarkedContainerRules {
 		BlockState state = self.getBlockState();
 		if (state.getBlock() instanceof ChestBlock && state.getValue(ChestBlock.TYPE) != ChestType.SINGLE) {
 			BlockPos otherPos = ChestBlock.getConnectedBlockPos(self.getBlockPos(), state);
-			if (level.isLoaded(otherPos) && level.getBlockEntity(otherPos) instanceof Container other) {
+			if (level.isLoaded(otherPos) && Loaded.blockEntity(level, otherPos) instanceof Container other) {
 				return List.of(own, other);
 			}
 		}

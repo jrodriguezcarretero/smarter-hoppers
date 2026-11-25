@@ -19,6 +19,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.phys.AABB;
 
+import smarterhoppers.tower.HopperWake;
+import smarterhoppers.util.Loaded;
+
 /**
  * Marked containers: a container with an item frame holding a comparator on any face,
  * either a vanilla item frame entity or a Fast Item Frames frame block. For a double chest,
@@ -47,7 +50,7 @@ public final class Markers {
 		if (isHalfMarked(level, pos)) {
 			return true;
 		}
-		BlockState state = level.getBlockState(pos);
+		BlockState state = Loaded.blockState(level, pos);
 		if (state.getBlock() instanceof ChestBlock && state.getValue(ChestBlock.TYPE) != ChestType.SINGLE) {
 			return isHalfMarked(level, ChestBlock.getConnectedBlockPos(pos, state));
 		}
@@ -84,9 +87,9 @@ public final class Markers {
 	private static boolean scan(ServerLevel level, BlockPos pos) {
 		for (Direction direction : Direction.values()) {
 			BlockPos framePos = pos.relative(direction);
-			BlockState frameState = level.getBlockState(framePos);
+			BlockState frameState = Loaded.blockState(level, framePos);
 			if (FastItemFramesCompat.towardsSupport(frameState).filter(d -> d == direction.getOpposite()).isPresent()) {
-				BlockEntity blockEntity = level.getBlockEntity(framePos);
+				BlockEntity blockEntity = Loaded.blockEntity(level, framePos);
 				if (blockEntity != null && isMarker(FastItemFramesCompat.framedItem(blockEntity))) {
 					return true;
 				}
@@ -104,21 +107,31 @@ public final class Markers {
 		return frame.getPos().relative(frame.getDirection().getOpposite());
 	}
 
-	/** Forget cached results for {@code pos}. */
+	/** Forget cached results for {@code pos}, whose marker may have changed, and let its hoppers know. */
 	public static void invalidate(Level level, BlockPos pos) {
+		forget(level, pos);
+		HopperWake.containerChanged(level, pos);
+	}
+
+	/** Forget cached results for {@code pos} only; for chunk unloads, when neighbours must not be touched. */
+	public static void forget(Level level, BlockPos pos) {
 		Long2LongOpenHashMap cache = CACHE.get(level);
 		if (cache != null) {
 			cache.remove(pos.asLong());
 		}
 	}
 
-	/** Forget cached results for every block next to {@code framePos}. */
+	/** {@link #invalidate} every block next to {@code framePos}. */
 	public static void invalidateAround(Level level, BlockPos framePos) {
-		Long2LongOpenHashMap cache = CACHE.get(level);
-		if (cache != null && !cache.isEmpty()) {
-			for (Direction direction : Direction.values()) {
-				cache.remove(framePos.relative(direction).asLong());
-			}
+		for (Direction direction : Direction.values()) {
+			invalidate(level, framePos.relative(direction));
+		}
+	}
+
+	/** {@link #forget} every block next to {@code framePos}. */
+	public static void forgetAround(Level level, BlockPos framePos) {
+		for (Direction direction : Direction.values()) {
+			forget(level, framePos.relative(direction));
 		}
 	}
 

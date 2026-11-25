@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.HopperBlock;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 
 import smarterhoppers.marker.Markers;
+import smarterhoppers.util.Loaded;
 
 /**
  * R3: a hopper of the sorting line (not facing down) with a marked container right below it puts
@@ -27,7 +28,7 @@ public final class LineRouting {
 			return false;
 		}
 		BlockPos belowPos = pos.below();
-		if (!(level.getBlockEntity(belowPos) instanceof Container) || !Markers.isMarked(serverLevel, belowPos)) {
+		if (!(Loaded.blockEntity(level, belowPos) instanceof Container) || !Markers.isMarked(serverLevel, belowPos)) {
 			return false;
 		}
 		Container below = HopperBlockEntity.getContainerAt(level, belowPos);

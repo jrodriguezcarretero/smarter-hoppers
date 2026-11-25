@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLevelEvents;
 import net.fabricmc.loader.api.FabricLoader;
 
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.ItemFrame;
 
 import org.slf4j.Logger;
@@ -27,9 +28,16 @@ public class SmarterHoppers implements ModInitializer {
 				Markers.invalidate(level, Markers.supportOf(frame));
 			}
 		});
+		// A frame that is broken or removed lets its hoppers know; one unloading with its chunk only
+		// drops the cache entry, since the neighbourhood may be unloading too.
 		ServerEntityEvents.ENTITY_UNLOAD.register((entity, level) -> {
 			if (entity instanceof ItemFrame frame) {
-				Markers.invalidate(level, Markers.supportOf(frame));
+				Entity.RemovalReason reason = frame.getRemovalReason();
+				if (reason != null && reason.shouldDestroy()) {
+					Markers.invalidate(level, Markers.supportOf(frame));
+				} else {
+					Markers.forget(level, Markers.supportOf(frame));
+				}
 			}
 		});
 		ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register((blockEntity, level) -> {
@@ -39,7 +47,7 @@ public class SmarterHoppers implements ModInitializer {
 		});
 		ServerBlockEntityEvents.BLOCK_ENTITY_UNLOAD.register((blockEntity, level) -> {
 			if (FastItemFramesCompat.isFrameBlockEntity(blockEntity)) {
-				Markers.invalidateAround(level, blockEntity.getBlockPos());
+				Markers.forgetAround(level, blockEntity.getBlockPos());
 			}
 		});
 		ServerLevelEvents.UNLOAD.register((server, level) -> Markers.clear(level));
