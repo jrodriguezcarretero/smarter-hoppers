@@ -13,6 +13,7 @@
 	},
 	"license": "MIT",
 	"icon": "assets/smarter_hoppers/icon.png",
+	"icon": "assets/smarter_hoppers/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
